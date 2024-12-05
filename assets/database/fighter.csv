@@ -1,0 +1,4 @@
+id,image,fireImage,fireSpeed,damge,hp
+1,ship1.png,fireball/fireball1.png,20,25,100
+2,ship2.png,fireball/fireball2.png,45,50,200
+3,ship3.png,fireball/fireball3.png,70,100,500
