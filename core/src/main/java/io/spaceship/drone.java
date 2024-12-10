@@ -1,13 +1,12 @@
 package io.spaceship;
 
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -36,6 +35,7 @@ public class drone extends Rectangle {
 	private Texture fireballtexture;
 	private Texture hpbar;
 	private Texture hp_img;
+	private Sound explosionSound;
 
 	public drone(String id, Array<drone> drones) {
 		super();
@@ -54,7 +54,7 @@ public class drone extends Rectangle {
 			this.width = 40;
 			this.height = 40;
 		}
-		
+
 		this.fireBallSpeed = 200;
 		this.hpbar = new Texture("hp_e1.png");
 		this.hp_img = new Texture("hp_f1.png");
@@ -81,6 +81,7 @@ public class drone extends Rectangle {
 					this.fireSpeed = Float.parseFloat(values[3]);
 					this.damage = Integer.parseInt(values[4]);
 					this.hp = Integer.parseInt(values[5]);
+					this.explosionSound = Gdx.audio.newSound(Gdx.files.internal(values[6]));
 					this.texture = new Texture(this.image);
 					this.fireballtexture = new Texture(this.fireImage);
 					break;
@@ -89,6 +90,14 @@ public class drone extends Rectangle {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Sound getExplosionSound() {
+		return explosionSound;
+	}
+
+	public void setExplosionSound(Sound explosionSound) {
+		this.explosionSound = explosionSound;
 	}
 
 	public String getImage() {
@@ -161,9 +170,10 @@ public class drone extends Rectangle {
 	public void getShot(int dam, int droneIdx, Array<item> items, Array<Array<Object>> itemsLocator) {
 		this.hp -= dam;
 		if (this.hp == 0) {
-			texture.dispose();
+			dispose();
 			setTexture(new Texture("explosion.png"));
 			dropItem(items, itemsLocator);
+			this.explosionSound.play();
 			Timer.schedule(new Timer.Task() {
 				@Override
 				public void run() {
@@ -190,7 +200,7 @@ public class drone extends Rectangle {
 			}
 			newfireball.x = this.x + this.width / 2 - newfireball.width / 2;
 			newfireball.y = this.y;
-			float vx = this.fireBallSpeed * (fighter.x + 40 - (newfireball.x+newfireball.width/2)) / (this.y - 80);
+			float vx = this.fireBallSpeed * (fighter.x + 40 - (newfireball.x + newfireball.width / 2)) / (this.y - 80);
 			Array<Object> fa = new Array<>();
 			fa.add(newfireball);
 			fa.add(vx);
@@ -314,9 +324,7 @@ public class drone extends Rectangle {
 	}
 
 	public void dispose() {
-		if (texture != null)
-			texture.dispose();
-		if (fireballtexture != null)
-			fireballtexture.dispose();
+		texture.dispose();
+		fireballtexture.dispose();
 	}
 }

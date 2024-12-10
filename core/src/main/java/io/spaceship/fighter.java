@@ -7,9 +7,11 @@ import java.util.Iterator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -34,6 +36,10 @@ public class fighter extends Rectangle {
 	private Texture texture;
 	private Texture fireballtexture;
 	private int enemiesDestroyed = 0;
+	private Sound damageSound;
+	private Sound explosionSound;
+	private Texture damEffect;
+	private boolean getShot = false;
 
 	public fighter(String id) {
 		super();
@@ -44,6 +50,10 @@ public class fighter extends Rectangle {
 		this.y = 0;
 		this.width = 80;
 		this.height = 80;
+		this.damageSound = Gdx.audio.newSound(Gdx.files.internal("damageSound.mp3"));
+		this.explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
+		this.damEffect = new Texture("damEffect2.png");
+
 	}
 
 	public int getFireBallSpeed() {
@@ -82,6 +92,22 @@ public class fighter extends Rectangle {
 		}
 	}
 
+	public Sound getDamageSound() {
+		return damageSound;
+	}
+
+	public void setDamageSound(Sound damageSound) {
+		this.damageSound = damageSound;
+	}
+
+	public Sound getExplosionSound() {
+		return explosionSound;
+	}
+
+	public void setExplosionSound(Sound explosionSound) {
+		this.explosionSound = explosionSound;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -92,6 +118,8 @@ public class fighter extends Rectangle {
 
 	public void setImage(String image) {
 		this.image = image;
+		this.texture.dispose();
+		this.texture = new Texture("explosion.png");
 	}
 
 	public String getFireImage() {
@@ -151,10 +179,11 @@ public class fighter extends Rectangle {
 	}
 
 	public void getShot(int dam) {
+		getShot = true;
 		this.hp -= dam;
+		this.damageSound.play();
 		if (this.hp <= 0) {
-			texture.dispose();
-			setTexture(new Texture("explosion.png"));
+			setImage("explosion.png");
 		}
 	}
 
@@ -248,9 +277,8 @@ public class fighter extends Rectangle {
 		}
 	}
 
-	public void fire(Array<drone> drones, Array<item> items, Array<Array<Object>> itemsLocator) {
+	public void fire() {
 		spawnFireBall();
-		fireBallMove(drones, items, itemsLocator);
 	}
 
 	public void draw(SpriteBatch batch) {
@@ -259,6 +287,11 @@ public class fighter extends Rectangle {
 		while (iter1.hasNext()) {
 			Rectangle fireball = iter1.next();
 			batch.draw(fireballtexture, fireball.x, fireball.y, fireball.width, fireball.height);
+		}
+
+		if (this.getShot) {
+			batch.draw(this.damEffect, this.x - 10, 0, 100, 100);
+			getShot = false;
 		}
 	}
 
@@ -307,9 +340,8 @@ public class fighter extends Rectangle {
 	}
 
 	public void dispose() {
-		if (texture != null)
-			texture.dispose();
-		if (fireballtexture != null)
-			fireballtexture.dispose();
+		this.texture.dispose();
+		this.fireballtexture.dispose();
+		this.damEffect.dispose();
 	}
 }

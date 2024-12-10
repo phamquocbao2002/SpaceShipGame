@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,7 +30,7 @@ public class Main extends ApplicationAdapter {
 	private long lastFrameTime = TimeUtils.nanoTime();
 	private SpriteBatch batch;
 	private Array<drone> drones;
-	private int droneIdx = 0;
+	private int droneIdx = 150;
 	private Array<item> items;
 	private long lastSpawnDroneTime;
 	private Stage stage;
@@ -42,6 +43,9 @@ public class Main extends ApplicationAdapter {
 	private Texture fighter_hp;
 	private Array<Array<Object>> itemsLocator = new Array<>();
 	private boolean win = false;
+	private boolean lose = false;
+	private TextButton start;
+	private boolean started = false;
 
 	@Override
 	public void create() {
@@ -58,7 +62,9 @@ public class Main extends ApplicationAdapter {
 		customFont = generator.generateFont(parameter);
 		generator.dispose();
 		batch = new SpriteBatch();
-		fighter = new fighter("1");
+		fighter = new fighter("3");
+		fighter.setBarrels(3);
+		fighter.setEnemiesDestroyed(150);
 		background = new Texture("background/space_bk.png");
 		fighter_hpbar = new Texture("hp_e1.png");
 		fighter_hp = new Texture("hp_f1.png");
@@ -70,17 +76,26 @@ public class Main extends ApplicationAdapter {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		skin.add("default-font", customFont);
 		skin.add("default", new Label.LabelStyle(customFont, Color.RED));
+		
 		replay = new TextButton("Play again!", skin);
 		replay.setSize(120, 30);
 		replay.setPosition(340, 200);
 		replay.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				fighter = new fighter("1");
 				rePlay();
 			}
 		});
-		stage.addActor(replay);
+
+		start = new TextButton("Start!", skin);
+		start.setSize(120, 30);
+		start.setPosition(340, 200);
+		start.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				gameStart();
+			}
+		});
 	}
 
 	private void spawnDrone() {
@@ -111,46 +126,102 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		logic();
-		if (TimeUtils.nanoTime() - lastFrameTime > (1000000000 / FPS)) {
-			lastFrameTime = TimeUtils.nanoTime();
-			draw();
+
+		if (!win && !lose) {
+			logic();
+			if (TimeUtils.nanoTime() - lastFrameTime > (1000000000 / FPS)) {
+				lastFrameTime = TimeUtils.nanoTime();
+				if (started) {
+					drawGamePlay();
+				} else {
+					drawGameStart();
+				}
+				
+			}
+		} else if (win){
+			drawGameWin();
+		} else if (lose) {
+			drawGameLost();
 		}
+
 	}
 
-	public void draw() {
+	public void logic() {
 
+		if (started && !win && !false) {
+			gamePlay();
+		} else {
+			stayRoom();
+		}
+
+	}
+
+	private void drawGameStart() {
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
+		Label gameStart = new Label("Click To Start!", skin);
+		fighter.getFireballs().clear();
+		gameStart.setSize(500, 150);
+		gameStart.setPosition(100, 240);
+		stage.addActor(gameStart);
+		stage.addActor(start);
+		stage.act();
+		stage.draw();
+		batch.end();
+	}
+
+	private void drawGamePlay() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		viewport.apply();
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();
 		batch.draw(background, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+//		setBackgrou
 		batch.draw(fighter_hpbar, 10, 450, 100, 20);
 		batch.draw(fighter_hp, 10, 451, Math.round(fighter.getHp() * 100 / fighter.getMaxHp()), 18);
 		batch.draw(fighter.getTexture(), fighter.x, fighter.y, fighter.width, fighter.height);
-
 		fighter.draw(batch);
 		for (item item : items) {
 			batch.draw(item.getTexture(), item.x, item.y, item.width, item.height);
 		}
 		for (drone drone : drones) {
-
 			drone.draw(batch);
-
 		}
 		batch.end();
-
-		if (fighter.getHp() <= 0) {
-			drawGameLost();
-		}
-
-		if (win) {
-			drawGameWin();
-		}
 	}
 
-	public void logic() {
+	private void drawGameWin() {
+		batch.begin();
+		Label gameWin = new Label("You Win!", skin);
+		fighter.getFireballs().clear();
+		gameWin.setSize(500, 150);
+		gameWin.setPosition(150, 240);
+		stage.addActor(gameWin);
+		stage.addActor(replay);
+		stage.act();
+		stage.draw();
+		batch.end();
+	}
+
+	public void drawGameLost() {
+		batch.begin();
+		Label gameOver = new Label("You Lost!", skin);
+		gameOver.setSize(500, 150);
+		gameOver.setPosition(150, 240);
+		stage.addActor(gameOver);
+		stage.addActor(replay);
+		stage.act();
+		stage.draw();
+		batch.end();
+	}
+
+	private void stayRoom() {
+
+	}
+
+	private void gamePlay() {
 		if (itemsLocator.size == 0) {
 			itemsGenerator();
 		}
@@ -162,10 +233,12 @@ public class Main extends ApplicationAdapter {
 		}
 
 		if (TimeUtils.millis() - lastSpawnDroneTime > 1000) {
-			if (fighter.getEnemiesDestroyed() <= 150) {
+			if (win == false && lose == false) {
 				spawnDrone();
-			} else {
-				win = true;
+			}
+
+			if (fighter.getEnemiesDestroyed() == 151) {
+				gameWin();
 			}
 		}
 
@@ -173,32 +246,29 @@ public class Main extends ApplicationAdapter {
 			drone.fire(fighter);
 		}
 
-		fighter.fire(drones, items, itemsLocator);
-
-		if (fighter.getHp() <= 0) {
-			gameOver();
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+			fighter.fire();
 		}
 
+		fighter.fireBallMove(drones, items, itemsLocator);
+
+		if (fighter.getHp() <= 0) {
+			fighter.setImage("explosion.png");
+			gameOver();
+		}
 	}
 
-	private void drawGameWin() {
-		Label gameWin = new Label("You Win!", skin);
+	public void gameStart() {
+		started = true;
+	}
+
+	public void gameWin() {
+		droneIdx = 0;
 		fighter.getFireballs().clear();
-		gameWin.setSize(500, 150);
-		gameWin.setPosition(150, 240);
-		stage.addActor(gameWin);
-		stage.act();
-		stage.draw();
-
-	}
-
-	public void drawGameLost() {
-		Label gameOver = new Label("You Lost!", skin);
-		gameOver.setSize(500, 150);
-		gameOver.setPosition(150, 240);
-		stage.addActor(gameOver);
-		stage.act();
-		stage.draw();
+		itemsLocator.clear();
+		items.clear();
+		win = true;
+		stage.clear();
 	}
 
 	public void gameOver() {
@@ -209,17 +279,21 @@ public class Main extends ApplicationAdapter {
 		fighter.getFireballs().clear();
 		itemsLocator.clear();
 		items.clear();
-		win = false;
+		lose = true;
+		stage.clear();
 	}
 
 	public void rePlay() {
 		droneIdx = 0;
 		drones.clear();
 		fighter.getFireballs().clear();
+		fighter = new fighter("1");
 		itemsLocator.clear();
 		items.clear();
+		lose = false;
 		win = false;
 		spawnDrone();
+		stage.clear();
 	}
 
 	public void itemsGenerator() {
