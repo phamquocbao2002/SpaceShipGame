@@ -30,7 +30,7 @@ public class Main extends ApplicationAdapter {
 	private long lastFrameTime = TimeUtils.nanoTime();
 	private SpriteBatch batch;
 	private Array<drone> drones;
-	private int droneIdx = 150;
+	private int droneIdx = 0;
 	private Array<item> items;
 	private long lastSpawnDroneTime;
 	private Stage stage;
@@ -38,7 +38,7 @@ public class Main extends ApplicationAdapter {
 	private TextButton replay;
 	private BitmapFont customFont;
 	private fighter fighter;
-	private Texture background;
+	private Texture mainBg1;
 	private Texture fighter_hpbar;
 	private Texture fighter_hp;
 	private Array<Array<Object>> itemsLocator = new Array<>();
@@ -46,6 +46,8 @@ public class Main extends ApplicationAdapter {
 	private boolean lose = false;
 	private TextButton start;
 	private boolean started = false;
+	private int bgY = 0;
+	private TextButton exist;
 
 	@Override
 	public void create() {
@@ -62,10 +64,8 @@ public class Main extends ApplicationAdapter {
 		customFont = generator.generateFont(parameter);
 		generator.dispose();
 		batch = new SpriteBatch();
-		fighter = new fighter("3");
-		fighter.setBarrels(3);
-		fighter.setEnemiesDestroyed(150);
-		background = new Texture("background/space_bk.png");
+		mainBg1 = new Texture("background/bg2.png");
+		fighter = new fighter("1");
 		fighter_hpbar = new Texture("hp_e1.png");
 		fighter_hp = new Texture("hp_f1.png");
 		drones = new Array<>();
@@ -76,7 +76,7 @@ public class Main extends ApplicationAdapter {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		skin.add("default-font", customFont);
 		skin.add("default", new Label.LabelStyle(customFont, Color.RED));
-		
+
 		replay = new TextButton("Play again!", skin);
 		replay.setSize(120, 30);
 		replay.setPosition(340, 200);
@@ -94,6 +94,21 @@ public class Main extends ApplicationAdapter {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				gameStart();
+			}
+		});
+		
+		exist = new TextButton("Exist!", skin);
+		exist.setSize(120, 30);
+		exist.setPosition(340, 160);
+		exist.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				exist();
+			}
+
+			private void exist() {
+				// TODO Auto-generated method stub
+				Gdx.app.exit();
 			}
 		});
 	}
@@ -136,9 +151,9 @@ public class Main extends ApplicationAdapter {
 				} else {
 					drawGameStart();
 				}
-				
+
 			}
-		} else if (win){
+		} else if (win) {
 			drawGameWin();
 		} else if (lose) {
 			drawGameLost();
@@ -166,6 +181,7 @@ public class Main extends ApplicationAdapter {
 		gameStart.setPosition(100, 240);
 		stage.addActor(gameStart);
 		stage.addActor(start);
+		stage.addActor(exist);
 		stage.act();
 		stage.draw();
 		batch.end();
@@ -177,8 +193,7 @@ public class Main extends ApplicationAdapter {
 		viewport.apply();
 		batch.setProjectionMatrix(viewport.getCamera().combined);
 		batch.begin();
-		batch.draw(background, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-//		setBackgrou
+		setBackgroud();
 		batch.draw(fighter_hpbar, 10, 450, 100, 20);
 		batch.draw(fighter_hp, 10, 451, Math.round(fighter.getHp() * 100 / fighter.getMaxHp()), 18);
 		batch.draw(fighter.getTexture(), fighter.x, fighter.y, fighter.width, fighter.height);
@@ -192,6 +207,17 @@ public class Main extends ApplicationAdapter {
 		batch.end();
 	}
 
+	private void setBackgroud() {
+		
+		this.bgY -= Math.round(480 * Gdx.graphics.getDeltaTime());
+		batch.draw(this.mainBg1, 0, 480 + this.bgY, viewport.getWorldWidth(), viewport.getWorldHeight());
+		batch.draw(this.mainBg1, 0, this.bgY, viewport.getWorldWidth(), viewport.getWorldHeight());
+		if (this.bgY <= -480) {
+			this.bgY = 0;
+		}
+		
+	}
+
 	private void drawGameWin() {
 		batch.begin();
 		Label gameWin = new Label("You Win!", skin);
@@ -200,6 +226,7 @@ public class Main extends ApplicationAdapter {
 		gameWin.setPosition(150, 240);
 		stage.addActor(gameWin);
 		stage.addActor(replay);
+		stage.addActor(exist);
 		stage.act();
 		stage.draw();
 		batch.end();
@@ -212,6 +239,7 @@ public class Main extends ApplicationAdapter {
 		gameOver.setPosition(150, 240);
 		stage.addActor(gameOver);
 		stage.addActor(replay);
+		stage.addActor(exist);
 		stage.act();
 		stage.draw();
 		batch.end();
