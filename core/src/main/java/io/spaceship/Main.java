@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Main extends ApplicationAdapter {
 	FitViewport viewport;
-	private int FPS = 240;
+	private static int FPS = 240;
 	private long lastFrameTime = TimeUtils.nanoTime();
 	private SpriteBatch batch;
 	private Array<drone> drones;
@@ -215,6 +215,8 @@ public class Main extends ApplicationAdapter {
 		if (this.bgY <= -480) {
 			this.bgY = 0;
 		}
+		
+	
 		
 	}
 

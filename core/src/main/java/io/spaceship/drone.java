@@ -25,7 +25,7 @@ public class drone extends Rectangle {
 	private String image;
 	private String fireImage;
 	private Float fireSpeed;
-	private int fireBallSpeed;
+	private static int fireBallSpeed = 200;
 	private long lastFireTime;
 	private Array<Array<Object>> fireballs;
 	private Array<drone> drones;
@@ -55,7 +55,6 @@ public class drone extends Rectangle {
 			this.height = 40;
 		}
 
-		this.fireBallSpeed = 200;
 		this.hpbar = new Texture("hp_e1.png");
 		this.hp_img = new Texture("hp_f1.png");
 	}
@@ -135,13 +134,6 @@ public class drone extends Rectangle {
 		this.damage = damage;
 	}
 
-	public int getFireBallSpeed() {
-		return fireBallSpeed;
-	}
-
-	public void setFireBallSpeed(int fireBallSpeed) {
-		this.fireBallSpeed = fireBallSpeed;
-	}
 
 	public Array<Array<Object>> getFireballs() {
 		return fireballs;
@@ -200,7 +192,7 @@ public class drone extends Rectangle {
 			}
 			newfireball.x = this.x + this.width / 2 - newfireball.width / 2;
 			newfireball.y = this.y;
-			float vx = this.fireBallSpeed * (fighter.x + 40 - (newfireball.x + newfireball.width / 2)) / (this.y - 80);
+			float vx = fireBallSpeed * (fighter.x + 40 - (newfireball.x + newfireball.width / 2)) / (this.y - 80);
 			Array<Object> fa = new Array<>();
 			fa.add(newfireball);
 			fa.add(vx);
@@ -216,7 +208,7 @@ public class drone extends Rectangle {
 			Rectangle fireball = (Rectangle) fa.get(0);
 			float vx = (float) fa.get(1);
 			fireball.x += vx * Gdx.graphics.getDeltaTime();
-			fireball.y -= this.fireBallSpeed * Gdx.graphics.getDeltaTime();
+			fireball.y -= fireBallSpeed * Gdx.graphics.getDeltaTime();
 			if (fireball.overlaps(fighter)) {
 				fighter.getShot(damage);
 				fireballs.removeIndex(fireballs.indexOf(fa, false));

@@ -11,7 +11,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -23,12 +22,12 @@ public class fighter extends Rectangle {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String image;
-	private int speed = 500;
+	private static int speed = 500;
 	private int barrels = 1;
 	private String fireImage;
 	private int fireSpeed;
 	private Array<Rectangle> fireballs;
-	private int fireBallSpeed;
+	private static int fireBallSpeed = 1000;
 	private long lastFireTime;
 	private int damage;
 	private int maxHp;
@@ -45,7 +44,6 @@ public class fighter extends Rectangle {
 		super();
 		setId(id);
 		this.fireballs = new Array<>();
-		this.fireBallSpeed = 1000;
 		this.x = 800 / 2 - 80 / 2;
 		this.y = 0;
 		this.width = 80;
@@ -56,13 +54,6 @@ public class fighter extends Rectangle {
 
 	}
 
-	public int getFireBallSpeed() {
-		return fireBallSpeed;
-	}
-
-	public void setFireBallSpeed(int fireBallSpeed) {
-		this.fireBallSpeed = fireBallSpeed;
-	}
 
 	public void setId(String id) {
 		this.id = id;
@@ -93,6 +84,7 @@ public class fighter extends Rectangle {
 	}
 
 	public Sound getDamageSound() {
+		
 		return damageSound;
 	}
 
@@ -170,14 +162,6 @@ public class fighter extends Rectangle {
 		this.hp = hp;
 	}
 
-	public int getSpeed() {
-		return speed;
-	}
-
-	public void setSpeed(int speed) {
-		this.speed = speed;
-	}
-
 	public void getShot(int dam) {
 		getShot = true;
 		this.hp -= dam;
@@ -205,11 +189,11 @@ public class fighter extends Rectangle {
 
 	public void move() {
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			this.x -= this.speed * Gdx.graphics.getDeltaTime();
+			this.x -= speed * Gdx.graphics.getDeltaTime();
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			this.x += this.speed * Gdx.graphics.getDeltaTime();
+			this.x += speed * Gdx.graphics.getDeltaTime();
 		}
 
 		if (this.x < 0)
@@ -253,7 +237,7 @@ public class fighter extends Rectangle {
 		Iterator<Rectangle> iter1 = this.fireballs.iterator();
 		while (iter1.hasNext()) {
 			Rectangle fireball = iter1.next();
-			fireball.y += this.fireBallSpeed * Gdx.graphics.getDeltaTime();
+			fireball.y += fireBallSpeed * Gdx.graphics.getDeltaTime();
 			if (fireball.y >= 430) {
 				if (fireball.y >= 480) {
 					iter1.remove();
@@ -344,4 +328,5 @@ public class fighter extends Rectangle {
 		this.fireballtexture.dispose();
 		this.damEffect.dispose();
 	}
+	
 }
