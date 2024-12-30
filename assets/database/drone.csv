@@ -1,0 +1,5 @@
+id,image,fireImage,fireSpeed,damge,hp,explosionSound
+1,drone1.png,fireball/fireball1.png,5,1,100,explosion.wav
+2,drone2.png,fireball/fireball1.png,10,2,200,explosion.wav
+3,drone3.png,fireball/fireball1.png,20,3,300,explosion.wav
+4,boss.png,fireball/bossFire.png,5,50,50000,bossExplosion.wav
