@@ -76,10 +76,9 @@ public class Main extends ApplicationAdapter {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		skin.add("default-font", customFont);
 		skin.add("default", new Label.LabelStyle(customFont, Color.RED));
-
-		replay = new TextButton("Play again!", skin);
+		replay = new TextButton("Play again !", skin);
 		replay.setSize(120, 30);
-		replay.setPosition(340, 200);
+		replay.setPosition((viewport.getWorldWidth() - replay.getWidth())/2, 200);
 		replay.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -87,19 +86,19 @@ public class Main extends ApplicationAdapter {
 			}
 		});
 
-		start = new TextButton("Start!", skin);
+		start = new TextButton("Start !", skin);
 		start.setSize(120, 30);
-		start.setPosition(340, 200);
+		start.setPosition((viewport.getWorldWidth() - start.getWidth())/2, 200);
 		start.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				gameStart();
 			}
 		});
-		
-		exist = new TextButton("Exist!", skin);
+
+		exist = new TextButton("Exist !", skin);
 		exist.setSize(120, 30);
-		exist.setPosition(340, 160);
+		exist.setPosition((viewport.getWorldWidth() - exist.getWidth())/2, 160);
 		exist.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -175,10 +174,11 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
-		Label gameStart = new Label("Click To Start!", skin);
+
+		Label gameStart = new Label("Click To Start !", skin);
 		fighter.getFireballs().clear();
-		gameStart.setSize(500, 150);
-		gameStart.setPosition(100, 240);
+		gameStart.setPosition((viewport.getWorldWidth() - gameStart.getWidth())/2, 240);
+
 		stage.addActor(gameStart);
 		stage.addActor(start);
 		stage.addActor(exist);
@@ -208,24 +208,21 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void setBackgroud() {
-		
+
 		this.bgY -= Math.round(480 * Gdx.graphics.getDeltaTime());
 		batch.draw(this.mainBg1, 0, 480 + this.bgY, viewport.getWorldWidth(), viewport.getWorldHeight());
 		batch.draw(this.mainBg1, 0, this.bgY, viewport.getWorldWidth(), viewport.getWorldHeight());
 		if (this.bgY <= -480) {
 			this.bgY = 0;
 		}
-		
-	
-		
+
 	}
 
 	private void drawGameWin() {
 		batch.begin();
-		Label gameWin = new Label("You Win!", skin);
+		Label gameWin = new Label("You Win !", skin);
 		fighter.getFireballs().clear();
-		gameWin.setSize(500, 150);
-		gameWin.setPosition(150, 240);
+		gameWin.setPosition((viewport.getWorldWidth() - gameWin.getWidth())/2, 240);
 		stage.addActor(gameWin);
 		stage.addActor(replay);
 		stage.addActor(exist);
@@ -236,9 +233,8 @@ public class Main extends ApplicationAdapter {
 
 	public void drawGameLost() {
 		batch.begin();
-		Label gameOver = new Label("You Lost!", skin);
-		gameOver.setSize(500, 150);
-		gameOver.setPosition(150, 240);
+		Label gameOver = new Label("Game Over !", skin);
+		gameOver.setPosition((viewport.getWorldWidth() - gameOver.getWidth())/2, 240);
 		stage.addActor(gameOver);
 		stage.addActor(replay);
 		stage.addActor(exist);
