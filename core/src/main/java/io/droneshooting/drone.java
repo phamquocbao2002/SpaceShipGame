@@ -25,7 +25,7 @@ public class drone extends Rectangle {
 	private String image;
 	private String fireImage;
 	private Float fireSpeed;
-	private static int fireBallSpeed = 200;
+	private static int fireBallSpeed = 400;
 	private long lastFireTime;
 	private Array<Array<Object>> fireballs;
 	private Array<drone> drones;
@@ -159,7 +159,7 @@ public class drone extends Rectangle {
 		this.droneIdx = droneIdx;
 	}
 
-	public void getShot(int dam, int droneIdx, Array<item> items, Array<Array<Object>> itemsLocator) {
+	public void getShot(int dam, int droneIdx, Array<item> items, Object[] itemsLocator) {
 		this.hp -= dam;
 		if (this.hp == 0) {
 			dispose();
@@ -242,15 +242,15 @@ public class drone extends Rectangle {
 		}
 	}
 
-	public void dropItem(Array<item> items, Array<Array<Object>> itemsLocator) {
+	public void dropItem(Array<item> items, Object[] itemsLocator) {
 		if (droneIdx <= 49) {
-			for (int i = 0; i <= 3; i++) {
+			for (int i = 0; i <= 2; i++) {
 				boolean availableItem = false;
-				Array<Object> itemLocations = itemsLocator.get(i);
-				for (int z = 1; z <= itemLocations.size - 1; z++) {
-					int itemIdx = (int) itemLocations.get(z);
+				Object[] itemLocations = (Object[]) itemsLocator[i];
+				for (int z = 1; z <= itemLocations.length - 1; z++) {
+					int itemIdx = (int) itemLocations[z];
 					if (droneIdx == itemIdx) {
-						String itemId = (String) itemLocations.get(0);
+						String itemId = (String) itemLocations[0];
 						item item = new item(itemId);
 						item.x = this.x;
 						item.y = this.y;
@@ -266,13 +266,13 @@ public class drone extends Rectangle {
 			}
 
 		} else if (droneIdx >= 50 && droneIdx <= 99) {
-			for (int i = 4; i <= 8; i++) {
+			for (int i = 3; i <= 6; i++) {
 				boolean availableItem = false;
-				Array<Object> itemLocations = itemsLocator.get(i);
-				for (int z = 1; z <= itemLocations.size - 1; z++) {
-					int itemIdx = (int) itemLocations.get(z);
+				Object[] itemLocations = (Object[]) itemsLocator[i];
+				for (int z = 1; z <= itemLocations.length - 1; z++) {
+					int itemIdx = (int) itemLocations[z];
 					if (droneIdx == itemIdx) {
-						String itemId = (String) itemLocations.get(0);
+						String itemId = (String) itemLocations[0];
 						item item = new item(itemId);
 						item.x = this.x;
 						item.y = this.y;
@@ -288,13 +288,13 @@ public class drone extends Rectangle {
 			}
 
 		} else if (droneIdx >= 100 && droneIdx <= 149) {
-			for (int i = 9; i <= 13; i++) {
+			for (int i = 7; i <= 10; i++) {
 				boolean availableItem = false;
-				Array<Object> itemLocations = itemsLocator.get(i);
-				for (int z = 1; z <= itemLocations.size - 1; z++) {
-					int itemIdx = (int) itemLocations.get(z);
+				Object[] itemLocations = (Object[]) itemsLocator[i];
+				for (int z = 1; z <= itemLocations.length - 1; z++) {
+					int itemIdx = (int) itemLocations[z];
 					if (droneIdx == itemIdx) {
-						String itemId = (String) itemLocations.get(0);
+						String itemId = (String) itemLocations[0];
 						item item = new item(itemId);
 						item.x = this.x;
 						item.y = this.y;

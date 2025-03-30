@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
+
 
 public class item extends Rectangle {
 	/**
@@ -21,6 +23,8 @@ public class item extends Rectangle {
 	private float value;
 	private int fallenSpeed;
 	private Texture texture;
+	private Sound effectSound;
+
 	public item(String id) {
 		super();
 		setId(id);
@@ -41,6 +45,7 @@ public class item extends Rectangle {
 					this.value = Float.parseFloat(values[3]);
 					this.fallenSpeed = Integer.parseInt(values[4]);
 					this.texture = new Texture(this.image);
+					this.effectSound = Gdx.audio.newSound(Gdx.files.internal(values[5]));
 					break;
 				}
 			}
@@ -106,10 +111,11 @@ public class item extends Rectangle {
 			fighter.heal(value);
 			
 		} else if (id == "4") {
-//			fighter.upgradeDamage(Math.round(value));
+
 		} else {
 			fighter.levelup();
 		}
+		this.effectSound.play();
 	}
 	
 }

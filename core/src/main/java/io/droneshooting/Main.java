@@ -1,6 +1,8 @@
 package io.droneshooting;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -41,7 +43,7 @@ public class Main extends ApplicationAdapter {
 	private Texture mainBg1;
 	private Texture fighter_hpbar;
 	private Texture fighter_hp;
-	private Array<Array<Object>> itemsLocator = new Array<>();
+	private Object[] itemsLocator = {};
 	private boolean win = false;
 	private boolean lose = false;
 	private TextButton start;
@@ -70,7 +72,6 @@ public class Main extends ApplicationAdapter {
 		fighter_hp = new Texture("hp_f1.png");
 		drones = new Array<>();
 		items = new Array<>();
-		itemsLocator = new Array<>();
 		stage = new Stage(new ScreenViewport());
 		Gdx.input.setInputProcessor(stage);
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -78,7 +79,7 @@ public class Main extends ApplicationAdapter {
 		skin.add("default", new Label.LabelStyle(customFont, Color.RED));
 		replay = new TextButton("Play again !", skin);
 		replay.setSize(120, 30);
-		replay.setPosition((viewport.getWorldWidth() - replay.getWidth())/2, 200);
+		replay.setPosition((viewport.getWorldWidth() - replay.getWidth()) / 2, 200);
 		replay.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -88,7 +89,7 @@ public class Main extends ApplicationAdapter {
 
 		start = new TextButton("Start !", skin);
 		start.setSize(120, 30);
-		start.setPosition((viewport.getWorldWidth() - start.getWidth())/2, 200);
+		start.setPosition((viewport.getWorldWidth() - start.getWidth()) / 2, 200);
 		start.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -98,7 +99,7 @@ public class Main extends ApplicationAdapter {
 
 		exist = new TextButton("Exist !", skin);
 		exist.setSize(120, 30);
-		exist.setPosition((viewport.getWorldWidth() - exist.getWidth())/2, 160);
+		exist.setPosition((viewport.getWorldWidth() - exist.getWidth()) / 2, 160);
 		exist.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -177,7 +178,7 @@ public class Main extends ApplicationAdapter {
 
 		Label gameStart = new Label("Click To Start !", skin);
 		fighter.getFireballs().clear();
-		gameStart.setPosition((viewport.getWorldWidth() - gameStart.getWidth())/2, 240);
+		gameStart.setPosition((viewport.getWorldWidth() - gameStart.getWidth()) / 2, 240);
 
 		stage.addActor(gameStart);
 		stage.addActor(start);
@@ -222,7 +223,7 @@ public class Main extends ApplicationAdapter {
 		batch.begin();
 		Label gameWin = new Label("You Win !", skin);
 		fighter.getFireballs().clear();
-		gameWin.setPosition((viewport.getWorldWidth() - gameWin.getWidth())/2, 240);
+		gameWin.setPosition((viewport.getWorldWidth() - gameWin.getWidth()) / 2, 240);
 		stage.addActor(gameWin);
 		stage.addActor(replay);
 		stage.addActor(exist);
@@ -234,7 +235,7 @@ public class Main extends ApplicationAdapter {
 	public void drawGameLost() {
 		batch.begin();
 		Label gameOver = new Label("Game Over !", skin);
-		gameOver.setPosition((viewport.getWorldWidth() - gameOver.getWidth())/2, 240);
+		gameOver.setPosition((viewport.getWorldWidth() - gameOver.getWidth()) / 2, 240);
 		stage.addActor(gameOver);
 		stage.addActor(replay);
 		stage.addActor(exist);
@@ -248,7 +249,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	private void gamePlay() {
-		if (itemsLocator.size == 0) {
+		if (itemsLocator.length == 0) {
 			itemsGenerator();
 		}
 
@@ -291,7 +292,7 @@ public class Main extends ApplicationAdapter {
 	public void gameWin() {
 		droneIdx = 0;
 		fighter.getFireballs().clear();
-		itemsLocator.clear();
+		itemsLocator = new Object[] {};
 		items.clear();
 		win = true;
 		stage.clear();
@@ -303,7 +304,7 @@ public class Main extends ApplicationAdapter {
 		}
 		droneIdx = 0;
 		fighter.getFireballs().clear();
-		itemsLocator.clear();
+		itemsLocator = new Object[] {};
 		items.clear();
 		lose = true;
 		stage.clear();
@@ -314,7 +315,7 @@ public class Main extends ApplicationAdapter {
 		drones.clear();
 		fighter.getFireballs().clear();
 		fighter = new fighter("1");
-		itemsLocator.clear();
+		itemsLocator = new Object[] {};
 		items.clear();
 		lose = false;
 		win = false;
@@ -324,104 +325,61 @@ public class Main extends ApplicationAdapter {
 
 	public void itemsGenerator() {
 		Random random = new Random();
-		Array<Object> l11 = new Array<>();
-		Array<Object> l12 = new Array<>();
-		Array<Object> l13 = new Array<>();
-		Array<Object> l14 = new Array<>();
-		Array<Object> l21 = new Array<>();
-		Array<Object> l22 = new Array<>();
-		Array<Object> l23 = new Array<>();
-		Array<Object> l24 = new Array<>();
-		Array<Object> l25 = new Array<>();
-		Array<Object> l31 = new Array<>();
-		Array<Object> l32 = new Array<>();
-		Array<Object> l33 = new Array<>();
-		Array<Object> l34 = new Array<>();
-		Array<Object> l35 = new Array<>();
+		Set<Integer> stage1_items_indexes = new HashSet<>();
+		Set<Integer> stage2_items_indexes = new HashSet<>();
+		Set<Integer> stage3_items_indexes = new HashSet<>();
 
-		Set<Integer> l1Idxs = new HashSet<>();
-		Array<Integer> l1Idxs_f = new Array<>();
-		Set<Integer> l2Idxs = new HashSet<>();
-		Array<Integer> l2Idxs_f = new Array<>();
-		Set<Integer> l3Idxs = new HashSet<>();
-		Array<Integer> l3Idxs_f = new Array<>();
-
-		while (l1Idxs.size() < 7) {
-			boolean existed = false;
+		while (stage1_items_indexes.size() <= 6) {
 			int number = random.nextInt(50);
 			try {
-				l1Idxs.add(number);
+				stage1_items_indexes.add(number);
 			} catch (Exception e) {
-				existed = true;
-			}
 
-			if (!existed) {
-				l1Idxs_f.add(number);
 			}
 		}
 
-		while (l2Idxs.size() < 8) {
-			boolean existed = false;
+		while (stage2_items_indexes.size() <= 8) {
 			int number = random.nextInt(50, 100);
 			try {
-				l2Idxs.add(number);
+				stage2_items_indexes.add(number);
 			} catch (Exception e) {
-				existed = true;
-			}
 
-			if (!existed) {
-				l2Idxs_f.add(number);
 			}
 		}
 
-		while (l3Idxs.size() < 8) {
-			boolean existed = false;
+		while (stage3_items_indexes.size() <= 9) {
 			int number = random.nextInt(100, 150);
 			try {
-				l3Idxs.add(number);
+				stage3_items_indexes.add(number);
 			} catch (Exception e) {
-				existed = true;
-			}
 
-			if (!existed) {
-				l3Idxs_f.add(number);
 			}
 		}
 
-		l1Idxs.clear();
-		l2Idxs.clear();
-		l3Idxs.clear();
+		List<Integer> stage1_items_indexes_array = new ArrayList<>(stage1_items_indexes);
+		List<Integer> stage2_items_indexes_array = new ArrayList<>(stage2_items_indexes);
+		List<Integer> stage3_items_indexes_array = new ArrayList<>(stage3_items_indexes);
 
-		l11.add("1", l1Idxs_f.get(0));
-		l12.add("2", l1Idxs_f.get(1), l1Idxs_f.get(2), l1Idxs_f.get(3));
-		l13.add("3", l1Idxs_f.get(4), l1Idxs_f.get(5));
+		Object[] stage1_items_type1 = { "1", stage1_items_indexes_array.get(0) };
+		Object[] stage1_items_type2 = { "2", stage1_items_indexes_array.get(1), stage1_items_indexes_array.get(2),
+				stage1_items_indexes_array.get(3) };
+		Object[] stage1_items_type3 = { "3", stage1_items_indexes_array.get(4), stage1_items_indexes_array.get(5) };
+		
+		Object[] stage2_items_type1 = { "1", stage2_items_indexes_array.get(0) };
+		Object[] stage2_items_type2 = { "2", stage1_items_indexes_array.get(1), stage1_items_indexes_array.get(2) };
+		Object[] stage2_items_type3 = { "3", stage2_items_indexes_array.get(3), stage2_items_indexes_array.get(4),
+				stage2_items_indexes_array.get(5), stage2_items_indexes_array.get(6) };
+		Object[] stage2_items_type5 = { "5", stage2_items_indexes_array.get(7) };
+		
+		Object[] stage3_items_type1 = { "1", stage3_items_indexes_array.get(0) };
+		Object[] stage3_items_type2 = { "2", stage1_items_indexes_array.get(1), stage1_items_indexes_array.get(2) };
+		Object[] stage3_items_type3 = { "3", stage3_items_indexes_array.get(3), stage3_items_indexes_array.get(4),
+				stage3_items_indexes_array.get(5), stage3_items_indexes_array.get(6) };
+		Object[] stage3_items_type5 = { "5", stage3_items_indexes_array.get(7), stage3_items_indexes_array.get(8) };
 
-		l21.add("1", l2Idxs_f.get(0));
-		l22.add("2", l2Idxs_f.get(1), l2Idxs_f.get(2));
-		l23.add("3", l2Idxs_f.get(3), l2Idxs_f.get(4), l2Idxs_f.get(5));
-		l25.add("5", l2Idxs_f.get(6), l2Idxs_f.get(7));
-
-		l31.add("1", l3Idxs_f.get(0));
-		l32.add("2", l3Idxs_f.get(1), l3Idxs_f.get(2));
-		l33.add("3", l3Idxs_f.get(3), l3Idxs_f.get(4), l3Idxs_f.get(5));
-		l35.add("5", l3Idxs_f.get(7));
-
-		itemsLocator.add(l11);
-		itemsLocator.add(l12);
-		itemsLocator.add(l13);
-		itemsLocator.add(l14);
-
-		itemsLocator.add(l21);
-		itemsLocator.add(l22);
-		itemsLocator.add(l23);
-		itemsLocator.add(l24);
-		itemsLocator.add(l25);
-
-		itemsLocator.add(l31);
-		itemsLocator.add(l32);
-		itemsLocator.add(l33);
-		itemsLocator.add(l34);
-		itemsLocator.add(l35);
+		itemsLocator = new Object[] { stage1_items_type1, stage1_items_type2, stage1_items_type3,
+				stage2_items_type1, stage2_items_type2, stage2_items_type3, stage2_items_type5, stage3_items_type1,
+				stage3_items_type2, stage3_items_type3, stage3_items_type5 };
 
 	}
 

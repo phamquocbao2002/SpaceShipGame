@@ -1,6 +1,6 @@
-id,image,interactiveAttribute,value,fallenSpeed
-1,skill/barrel.png,barrels,2,400
-2,skill/speed.png,fireSpeed,5,450
-3,skill/heal.png,hp,0.2,350
-4,skill/damage.png,damge,10,300
-5,skill/levelup.png,id,1,500
+id,image,interactiveAttribute,value,fallenSpeed,effectSound
+1,skill/barrel.png,barrels,2,400,skill/powerupSound.mp3
+2,skill/speed.png,fireSpeed,3,450,skill/speedupSound.mp3
+3,skill/heal.png,hp,0.2,350,skill/healSound.mp3
+4,skill/damage.png,damge,10,300,skill/powerupSound.mp3
+5,skill/levelup.png,id,1,500,skill/levelupSound.mp3

@@ -27,7 +27,7 @@ public class fighter extends Rectangle {
 	private String fireImage;
 	private int fireSpeed;
 	private Array<Rectangle> fireballs;
-	private static int fireBallSpeed = 1000;
+	private static int fireBallSpeed = 1500;
 	private long lastFireTime;
 	private int damage;
 	private int maxHp;
@@ -165,7 +165,7 @@ public class fighter extends Rectangle {
 	public void getShot(int dam) {
 		getShot = true;
 		this.hp -= dam;
-		this.damageSound.play();
+		this.damageSound.setVolume(this.damageSound.play(), 0.5f);
 		if (this.hp <= 0) {
 			setImage("explosion.png");
 		}
@@ -205,24 +205,24 @@ public class fighter extends Rectangle {
 	public void spawnFireBall() {
 		if (TimeUtils.nanoTime() - this.lastFireTime > (1000000000 / this.fireSpeed)) {
 			Rectangle fireball_center = new Rectangle();
-			fireball_center.x = this.x + 36;
+			fireball_center.x = this.x + 34;
 			fireball_center.y = 80;
-			fireball_center.width = 8;
-			fireball_center.height = 8;
+			fireball_center.width = 12;
+			fireball_center.height = 36;
 			if (barrels == 1) {
 				fireballs.add(fireball_center);
 			} else {
 				Rectangle fireball_right = new Rectangle();
-				fireball_right.x = this.x + 36 + 20;
+				fireball_right.x = this.x + 34 + 20;
 				fireball_right.y = 80 - 40;
-				fireball_right.width = 8;
-				fireball_right.height = 8;
+				fireball_right.width = 14;
+				fireball_right.height = 36;
 
 				Rectangle fireball_left = new Rectangle();
-				fireball_left.x = this.x + 36 - 20;
+				fireball_left.x = this.x + 34 - 20;
 				fireball_left.y = 80 - 40;
-				fireball_left.width = 8;
-				fireball_left.height = 8;
+				fireball_left.width = 12;
+				fireball_left.height = 36;
 
 				fireballs.add(fireball_center);
 				fireballs.add(fireball_right);
@@ -233,7 +233,7 @@ public class fighter extends Rectangle {
 		}
 	}
 
-	public void fireBallMove(Array<drone> drones, Array<item> items, Array<Array<Object>> itemsLocator) {
+	public void fireBallMove(Array<drone> drones, Array<item> items, Object[] itemsLocator) {
 		Iterator<Rectangle> iter1 = this.fireballs.iterator();
 		while (iter1.hasNext()) {
 			Rectangle fireball = iter1.next();
