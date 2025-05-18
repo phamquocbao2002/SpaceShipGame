@@ -394,6 +394,5 @@ public class Main extends ApplicationAdapter {
 			d.dispose();
 		}
 		drones.clear();
-
 	}
 }
